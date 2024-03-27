@@ -1,8 +1,7 @@
-# Configuration du provider Azure et version Terraform
 terraform {
   required_providers {
     azurerm = {
-      source  = "hashicorp/azurerm"
+      source = "hashicorp/azurerm"
       version = "~> 3.0.0"
     }
   }
@@ -13,16 +12,20 @@ provider "azurerm" {
   features {}
 }
 
-# Déclaration des ressources Azure et configuration pour héberger une application Java
-resource "azurerm_resource_group" "my_resource_group" {
-  name     = "myResourceGroup"
+resource "azurerm_resource_group" "example" {
+  name     = "rg-{votre_nom}-${random_integer.nom_entier}"
   location = "West Europe"
 }
 
-resource "azurerm_app_service_plan" "my_app_service_plan" {
-  name                = "myAppServicePlan"
-  location            = azurerm_resource_group.my_resource_group.location
-  resource_group_name = azurerm_resource_group.my_resource_group.name
+resource "random_integer" "nom_entier" {
+  min = 1000
+  max = 9999
+}
+
+resource "azurerm_app_service_plan" "example" {
+  name                = "asp-{votre_nom}-${random_integer.nom_entier}"
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
   kind                = "Linux"
   reserved            = true
 
@@ -32,13 +35,15 @@ resource "azurerm_app_service_plan" "my_app_service_plan" {
   }
 }
 
-resource "azurerm_web_app" "my_web_app" {
-  name                = "myWebApp"
-  location            = azurerm_resource_group.my_resource_group.location
-  resource_group_name = azurerm_resource_group.my_resource_group.name
-  app_service_plan_id = azurerm_app_service_plan.my_app_service_plan.id
+resource "azurerm_linux_web_app" "example" {
+  name                = "webapp-{Marechal}-${random_integer.nom_entier}"
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+  app_service_plan_id = azurerm_app_service_plan.example.id
 
   site_config {
-    linux_fx_version = "JAVA|11-java11"
+    java_version         = "1.8"
+    java_container       = "TOMCAT"
+    java_container_version = "8.5"
   }
 }
