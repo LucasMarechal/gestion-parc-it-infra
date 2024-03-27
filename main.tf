@@ -18,12 +18,12 @@ resource "random_integer" "random_id" {
 }
 
 resource "azurerm_resource_group" "rg" {
-  name     = "rg-kenzo-giardina-${random_integer.random_id.result}"
+  name     = "rg-lucas-marechal-${random_integer.random_id.result}"
   location = "France Central"  # Région France Central
 }
 
 resource "azurerm_app_service_plan" "asp" {
-  name                = "asp-kenzo-giardina-${random_integer.random_id.result}"
+  name                = "asp-lucas-marechal-${random_integer.random_id.result}"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   kind                = "Linux"
@@ -37,7 +37,7 @@ resource "azurerm_app_service_plan" "asp" {
 }
 
 resource "azurerm_app_service" "webapp" {
-  name                = "webapp-kenzo-giardina-${random_integer.random_id.result}"
+  name                = "webapp-lucas-marechal-${random_integer.random_id.result}"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   app_service_plan_id = azurerm_app_service_plan.asp.id
