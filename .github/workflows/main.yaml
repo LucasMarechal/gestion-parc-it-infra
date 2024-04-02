@@ -1,4 +1,4 @@
-name: "Workflow principal de CI/CD"
+name: Workflow principal de CI/CD
 
 on:
   push:
@@ -8,19 +8,14 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout du code
-        uses: actions/checkout@v3
-
-      - name: Setup de Java
-        uses: actions/setup-java@v3
+        uses: actions/checkout@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v2
         with:
           java-version: '17'
-          distribution: 'adopt'
-
-      - name: Build
-        run: ./gradlew build
-
-      - name: Test
-        run: ./gradlew test
+      - name: Build et test
+        run: |
+          chmod +x ./gradlew  # Donner les autorisations d'exécution si nécessaire
+          bash ./gradlew build
