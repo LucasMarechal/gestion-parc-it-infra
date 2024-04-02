@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     azurerm = {
-      source  = "hashicorp/azurerm"
+      source = "hashicorp/azurerm"
       version = "~> 3.0.0"
     }
   }
@@ -12,38 +12,46 @@ provider "azurerm" {
   features {}
 }
 
-resource "random_integer" "random_id" {
+resource "random_integer" "random_suffix" {
   min = 1000
   max = 9999
 }
 
 resource "azurerm_resource_group" "rg" {
-  name     = "rg-lucas-marechal-${random_integer.random_id.result}"
-  location = "France Central"  # Région France Central
+  name     = "rg-lucas-marechal-${random_integer.random_suffix.result}"
+  location = "West Europe"
 }
 
-resource "azurerm_app_service_plan" "asp" {
-  name                = "asp-lucas-marechal-${random_integer.random_id.result}"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  kind                = "Linux"
-
-  sku {
-    tier = "Basic"
-    size = "B1"
-  }
-
-  reserved = true
+resource "random_integer" "asp" {
+  min = 100
+  max = 999
 }
 
-resource "azurerm_app_service" "webapp" {
-  name                = "webapp-lucas-marechal-${random_integer.random_id.result}"
+resource "azurerm_service_plan" "asp" {
+  name                = "asp-lucas-marechal-${random_integer.asp.result}"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  app_service_plan_id = azurerm_app_service_plan.asp.id
+  os_type             = "Linux"
+  sku_name            = "B1"
+}
+
+resource "random_integer" "webapp" {
+  min = 100
+  max = 999
+}
+
+resource "azurerm_linux_web_app" "webapp" {
+  name                = "webapp-lucas-marechal-${random_integer.webapp.result}"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+
+  service_plan_id = azurerm_service_plan.asp.id
 
   site_config {
-    java_version    = "1.7"
-    java_container  = "TOMCAT"
+    application_stack {
+      java_server        = "JAVA"
+      java_version       = "java17"
+      java_server_version = "17"
+    }
   }
 }
